@@ -1,0 +1,71 @@
+<script>
+
+transmitters = 6;
+startPoint = [10,19];
+endPoint = [19,14];
+
+//Program checks if drone can find a safe flypath through transmitters with [X,Y] coordinates and [P] power of transmitters.
+i = 0;
+array = [];
+value = true;
+
+var data = [
+    [6,11,4], [8,17,3], [19,19,2], [19,11,4], [15,7,6], [12,19,4]
+]
+
+function isSafeFlyPossible () {
+    lastCircle = [];
+    //find first circle and last circle
+    data.forEach(function(el) {
+        if(isInCircle(el[0],el[1],el[2],startPoint)) {
+            array.push(el);
+        };
+        if(isInCircle(el[0],el[1],el[2],endPoint)) {
+            lastCircle = el;
+        };
+    }, this);
+
+    //Check if fly is possible
+    while(value){
+        array.forEach(function(el){
+            data.forEach(function(dataEl){
+                if(isThereConnection(el,dataEl)){
+                    array.push(dataEl);
+                    if(areArraysEqual(dataEl,lastCircle)){
+                        value = false;
+                    }
+                };
+            });
+        });
+        //Prevent Infinity loop
+        i++
+        if(i === 10){
+            return "I didn't find a path";
+            break;
+        } else {
+            return "Fly is possible";
+        }
+    }
+}
+
+function areArraysEqual(array,array2){
+    if(array[0] === array2[0] && array[1] === array2[1] && array[2] === array2[2]){
+        return true;
+    }
+}
+
+function isInCircle(x,y,p,point){
+    if(point[0]<x+p && point[0]>x-p && point[1]<y+p && point[1]>y-p) {
+        return true;
+    }
+}
+
+function isThereConnection(array,array2){
+    //We dont have to be worried of another direction here.
+    if((array[2]+array2[2])**2 >= (array2[0]-array[0])**2 + (array2[1]-array[1])**2){
+        return true;
+    } else { return false;}
+}
+
+console.log(isSafeFlyPossible()) 
+</script>
